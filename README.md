@@ -6,6 +6,7 @@
 * Nguyễn Bá Vương
 * Trần Trọng Vinh
 * Giáp Văn Vĩnh
+* Nguyễn Trọng Giang
 ---
 ## Download:
 ```sh
