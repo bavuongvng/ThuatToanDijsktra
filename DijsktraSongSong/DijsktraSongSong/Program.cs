@@ -4,15 +4,60 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
 
 namespace DijsktraTuanTu
 {
+
     class Program
     {
         static int n, diemDau, diemCuoi, i = 0;
         static int[,] arr;
         static int voCung = 0;
         static int[] Len, S, P;
+
+        class Test
+        {
+            private int d, c;
+
+            public Test(int d, int c)
+            {
+                this.d = d;
+                this.c = c;
+            }
+
+            public void KhoiGan()
+            {
+                for (int i = d; i < c; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                    {
+                        if (i != j && arr[i, j] == 0)
+                        {
+                            arr[i, j] = voCung;
+                        }
+                    }
+                    Len[i] = voCung;
+                    S[i] = 0;
+                    P[i] = diemDau;
+                }
+                Len[diemDau] = 0;
+            }
+
+            public void TinhLen()
+            {
+                for (int j = d; j < c; j++)
+                {
+                    if (S[j] == 0 && Len[i] + arr[i, j] < Len[j])
+                    {
+                        Len[j] = Len[i] + arr[i, j];
+                        P[j] = i;
+                    }
+                }
+            }
+
+        }
+        
 
         static void Main(string[] args)
         {
@@ -32,26 +77,25 @@ namespace DijsktraTuanTu
                 Console.WriteLine();
             }
         }
+
         public static void Dijsktra()
         {
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (i != j && arr[i, j] == 0)
-                    {
-                        arr[i, j] = voCung;
-                    }
-                }
-            }
+            Thread bxl1, bxl2, bxl3, bxl4;
+            Test test1 = new Test(0,2);
+            Test test2 = new Test(2,4);
+            Test test3 = new Test(4,6);
 
-            for (int i = 0; i < n; i++)
-            {
-                Len[i] = voCung;
-                S[i] = 0;
-                P[i] = diemDau;
-            }
-            Len[diemDau] = 0;
+            bxl1 = new Thread(test1.KhoiGan);
+            bxl2 = new Thread(test2.KhoiGan);
+            bxl3 = new Thread(test3.KhoiGan);
+
+            bxl1.Start();
+            bxl2.Start();
+            bxl3.Start();
+
+            bxl1.Join();
+            bxl2.Join();
+            bxl3.Join();
 
             while (S[diemCuoi] == 0)
             {
@@ -73,15 +117,20 @@ namespace DijsktraTuanTu
                 }
 
                 S[i] = 1;
-                for (int j = 0; j < n; j++)
-                {
-                    if (S[j] == 0 && Len[i] + arr[i, j] < Len[j])
-                    {
-                        Len[j] = Len[i] + arr[i, j];
-                        P[j] = i;
-                    }
-                }
+
+                bxl1 = new Thread(test1.TinhLen);
+                bxl2 = new Thread(test2.TinhLen);
+                bxl3 = new Thread(test3.TinhLen);
+
+                bxl1.Start();
+                bxl2.Start();
+                bxl3.Start();
+
+                bxl1.Join();
+                bxl2.Join();
+                bxl3.Join();
             }
+
             Console.WriteLine("Done dijsktra");
             Console.WriteLine("Duong di: ");
             List<int> paths = new List<int>();
@@ -97,7 +146,6 @@ namespace DijsktraTuanTu
             {
                 Console.Write(path + "==>");
             }
-
         }
         public static void ReadFile(string path)
         {
